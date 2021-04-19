@@ -37,6 +37,7 @@ class _ShrinkTopListPageState extends State<ShrinkTopListPage> {
     Colors.orange,
     Colors.purple,
     Colors.red,
+    Colors.green,
   ];
 
   double _cardHeight = 150.0;
@@ -56,13 +57,22 @@ class _ShrinkTopListPageState extends State<ShrinkTopListPage> {
                   final double difference =
                       scrollController.offset - itemPositionOffset;
 
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Card(
-                      child: SizedBox(height: _cardHeight),
-                      margin: _cardMargin,
-                      color:
-                          _colors.elementAt(Random().nextInt(_colors.length)),
+                  final double percent = 1 - (difference / _cardHeight);
+
+                  double opacity = percent;
+
+                  if (opacity > 1.0) opacity = 1.0;
+                  if (opacity < 0.0) opacity = 0.0;
+
+                  return Opacity(
+                    opacity: opacity,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Card(
+                        child: SizedBox(height: _cardHeight),
+                        margin: _cardMargin,
+                        color: _colors.elementAt(index % _colors.length),
+                      ),
                     ),
                   );
                 },
