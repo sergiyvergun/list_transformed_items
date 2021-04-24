@@ -15,8 +15,6 @@ class _ShrinkTopListPageState extends State<ShrinkTopListPage> {
   final scrollController = ScrollController();
 
   void onListen() {
-    print(scrollController.offset);
-
     setState(() {});
   }
 
@@ -40,8 +38,7 @@ class _ShrinkTopListPageState extends State<ShrinkTopListPage> {
     Colors.green,
   ];
 
-  double _cardHeight = 150.0;
-  var _cardMargin = EdgeInsets.only(bottom: 30.0);
+  double _itemSize = 150.0;
 
   @override
   Widget build(BuildContext context) {
@@ -50,28 +47,45 @@ class _ShrinkTopListPageState extends State<ShrinkTopListPage> {
         body: CustomScrollView(
           controller: scrollController,
           slivers: <Widget>[
+            Placeholder(),
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  final double itemPositionOffset = index * _cardHeight;
+                  final double itemPositionOffset = index * _itemSize / 2;
                   final double difference =
                       scrollController.offset - itemPositionOffset;
 
-                  final double percent = 1 - (difference / _cardHeight);
+                  final double percent = 1 - (difference / (_itemSize / 2));
 
                   double opacity = percent;
+                  double scale = percent;
 
                   if (opacity > 1.0) opacity = 1.0;
                   if (opacity < 0.0) opacity = 0.0;
 
-                  return Opacity(
-                    opacity: opacity,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Card(
-                        child: SizedBox(height: _cardHeight),
-                        margin: _cardMargin,
-                        color: _colors.elementAt(index % _colors.length),
+                  if (percent > 1.0) scale = 1.0;
+
+                  return Align(
+                    heightFactor: 0.5,
+                    child: Opacity(
+                      opacity: opacity,
+                      child: Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.identity()..scale(scale, 1.0),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              SizedBox(height: _itemSize),
+                            ],
+                          ),
+                          color: _colors.elementAt(index % _colors.length),
+                        ),
                       ),
                     ),
                   );
